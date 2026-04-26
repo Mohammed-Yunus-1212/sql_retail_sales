@@ -70,7 +70,7 @@ SELECT DISTINCT category FROM retailsales
 
 --DATA ANALYSIS 
 
---Q1 Write a SQL query to retrive all columns for sales all column for sales made on '2022-11-05'
+--Q1 SQL query to retrive all columns for sales all column for sales made on '2022-11-05'
 SELECT * FROM retailsales
 	WHERE sale_date = '2022-11-05'
 
@@ -111,13 +111,22 @@ SELECT
 	GROUP BY category, gender
 	ORDER BY category
 
---Q7 SQL query to calculate average sales for each month. 
-SELECT
-	TO_CHAR(sale_date, 'YYYY-MM'),
-	AVG(total_sale) as avg_sale
-	FROM retailsales
-	GROUP BY 1
-	ORDER BY 1
+--Q7 SQL query to calculate average sales for each month. Find out best selling month in each year
+SELECT 
+       year,
+       month,
+    avg_sale
+FROM 
+(    
+SELECT 
+    EXTRACT(YEAR FROM sale_date) as year,
+    EXTRACT(MONTH FROM sale_date) as month,
+    AVG(total_sale) as avg_sale,
+    RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
+FROM retailsales
+GROUP BY 1, 2
+) as t1
+WHERE rank = 1
 
 --Q8 SQL query to find top 5 customers based on highest total_sales
 SELECT
